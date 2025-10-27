@@ -7,14 +7,12 @@ package it.unibo.collections.social.impl;
 import it.unibo.collections.social.api.SocialNetworkUser;
 import it.unibo.collections.social.api.User;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This will be an implementation of
@@ -38,7 +36,7 @@ public final class SocialNetworkUserImpl<U extends User> extends UserImpl implem
      *
      * think of what type of keys and values would best suit the requirements
      */
-
+    private Map <String, Collection<U>> groupFollowing; 
     /*
      * [CONSTRUCTORS]
      *
@@ -64,12 +62,16 @@ public final class SocialNetworkUserImpl<U extends User> extends UserImpl implem
      *            application
      */
     public SocialNetworkUserImpl(final String name, final String surname, final String user, final int userAge) {
-        super(null, null, null, 0);
+        super(name, surname, user, userAge);
+        groupFollowing = new HashMap<>(); 
     }
 
     /*
      * 2) Define a further constructor where the age defaults to -1
      */
+    public SocialNetworkUserImpl(final String name, final String surname, final String user) {
+        this(name, surname, user, -1);
+    }
 
     /*
      * [METHODS]
@@ -78,7 +80,12 @@ public final class SocialNetworkUserImpl<U extends User> extends UserImpl implem
      */
     @Override
     public boolean addFollowedUser(final String circle, final U user) {
-        return false;
+        Collection<U> followedUsersInGroup = this.getUsersInGroup(circle); // Not using the public this.getFollowedUsersInGroup() because there's no need of a copy
+        if (followedUsersInGroup.isEmpty()) {
+            groupFollowing.put(circle, followedUsersInGroup);
+        }
+        boolean exists = followedUsersInGroup.add(user);
+        return exists;
     }
 
     /**
@@ -88,11 +95,22 @@ public final class SocialNetworkUserImpl<U extends User> extends UserImpl implem
      */
     @Override
     public Collection<U> getFollowedUsersInGroup(final String groupName) {
-        return null;
+        return new HashSet<>(this.getUsersInGroup(groupName)); // safe-copy for outer use
+    }
+
+    private Collection<U> getUsersInGroup(final String groupName) {
+        Collection<U> followedInGroup = groupFollowing.get(groupName);
+        return followedInGroup != null 
+            ? followedInGroup
+            : new HashSet<>(); // Set because you can't follow the same user in the same group more than one time
     }
 
     @Override
     public List<U> getFollowedUsers() {
-        return null;
+        List<U> followedUsers = new LinkedList<>(); // Linked cause we're gonna add only
+        for (Collection<U> u : groupFollowing.values()) {
+            followedUsers.addAll(u); // FIXME O(n^2)?
+        }
+        return followedUsers;
     }
 }
