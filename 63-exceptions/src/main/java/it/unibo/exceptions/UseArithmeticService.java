@@ -51,12 +51,13 @@ public final class UseArithmeticService {
          */
         boolean success = false;
         while (!success) {
-        try {
-            server.sendData(message);
-            success = true;
-        } catch (IOException e) {
+            try {
+                server.sendData(message);
+                success = true;
+            } catch (IOException e) {
 
-        }}
+            }
+        }
     }
 
     private static String retryReceiveOnNetworkError(final NetworkComponent server) {
