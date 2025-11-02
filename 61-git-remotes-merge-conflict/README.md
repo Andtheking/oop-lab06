@@ -131,7 +131,7 @@ nothing to commit, working tree clean
 
 7. Si aggiunga il nuovo repository creato come **remote** e si elenchino i remote
 ```bash
-$ git remote add mia-repo git@github.com:Andtheking/OOP-git-merge-conflict-test.git
+$ git remote add mia-repo https://github.com/Andtheking/OOP-git-merge-conflict-test
 
 $ git remote -v
 
